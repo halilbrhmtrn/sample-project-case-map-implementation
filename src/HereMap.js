@@ -1,133 +1,29 @@
 import React, { Component } from 'react';
-
+import DrawRoute from './DrawRoute';
+import DrawResizablePolygon from './DrawResizablePolygon';
 
 class HereMap extends Component {
     mapRef = React.createRef();
 
     state = {
-        map: null
+        map: null,
+        paramsA: null,
+        paramsB: null,
+        paramsTerritory1: null,
+        paramsTerritory2: null
     };
 
-    createLineStringFromPoints(H, points) {
+    createLineStringFromPoints = (H, points) => {
         var lineString = new H.geo.LineString();
         points.forEach(point => {
             lineString.pushPoint({ lat: point.C, lng: point.D });
         })
         return lineString;
     }
-    createMarkers(H, map, points) {
-        points.forEach(point => {
-            let pointMarker = new H.map.Marker({ lat: point.C, lng: point.D }, { volatility: true });
-            pointMarker.setData('RouteId: ' + point.A.toString() + ' Sequence: ' + point.B.toString() + ' Lat: ' + point.C.toString() + ' Lng: ' + point.D.toString());
-            pointMarker.draggable = true;
-            map.addObject(pointMarker);
-        })
-    }
-    calculateAndDrawRoute(platform, H, map, points) {
-        var router = platform.getRoutingService(null, 8),
-            routeRequestParams = {
-                routingMode: 'fast',
-                transportMode: 'pedestrian',
-                origin: points[0].C.toString() + ',' + points[0].D.toString(),
-                destination: points[points.length - 2].C.toString() + ',' + points[points.length - 2].D.toString(),
-                return: 'polyline'
-            };
-
-
-        router.calculateRoute(
-            routeRequestParams, (result) => {
-            const polyline = new H.map.Polyline(this.createLineStringFromPoints(H, points));
-            map.addObject(polyline);
-            map.getViewModel().setLookAtData({
-                bounds: polyline.getBoundingBox()
-            });
-            this.createMarkers(H, map, points);
-
-        },
-            () => {
-                alert('Can\'t reach the remote server');
-            }
-        );
-    }
-     createResizablePolygon(H, map, lineString) {
-        var svgCircle = '<svg width="20" height="20" version="1.1" xmlns="http://www.w3.org/2000/svg">' +
-            '<circle cx="10" cy="10" r="7" fill="transparent" stroke="red" stroke-width="4"/>' +
-            '</svg>',
-            polygon = new H.map.Polygon(
-              new H.geo.Polygon(lineString),
-              {
-                style: {fillColor: 'rgba(150, 100, 0, .8)', lineWidth: 0}
-              }
-            ),
-            verticeGroup = new H.map.Group({
-              visibility: false
-            }),
-            mainGroup = new H.map.Group({
-              volatility: true, 
-              objects: [polygon, verticeGroup]
-            }),
-            polygonTimeout;
-      
-        polygon.draggable = true;
-      
-        polygon.getGeometry().getExterior().eachLatLngAlt(function(lat, lng, alt, index) {
-          var vertice = new H.map.Marker(
-            {lat, lng},
-            {
-              icon: new H.map.Icon(svgCircle, {anchor: {x: 10, y: 10}})
-            }
-          );
-          vertice.draggable = true;
-          vertice.setData({'verticeIndex': index})
-          verticeGroup.addObject(vertice);
-        });
-      
-        map.addObject(mainGroup);
-      
-        mainGroup.addEventListener('pointerenter', function(evt) {
-          if (polygonTimeout) {
-            clearTimeout(polygonTimeout);
-            polygonTimeout = null;
-          }
-      
-          verticeGroup.setVisibility(true);
-        }, true);
-      
-        mainGroup.addEventListener('pointerleave', function(evt) {
-          var timeout = (evt.currentPointer.type === 'touch') ? 1000 : 0;
-      
-          polygonTimeout = setTimeout(function() {
-            verticeGroup.setVisibility(false);
-          }, timeout);
-        }, true);
-      
-        verticeGroup.addEventListener('pointerenter', function(evt) {
-          document.body.style.cursor = 'pointer';
-        }, true);
-      
-        verticeGroup.addEventListener('pointerleave', function(evt) {
-          document.body.style.cursor = 'default';
-        }, true);
-      
-        verticeGroup.addEventListener('drag', function(evt) {
-          var pointer = evt.currentPointer,
-              geoLineString = polygon.getGeometry().getExterior(),
-              geoPoint = map.screenToGeo(pointer.viewportX, pointer.viewportY);
-      
-          evt.target.setGeometry(geoPoint);
-      
-          geoLineString.removePoint(evt.target.getData()['verticeIndex']);
-          geoLineString.insertPoint(evt.target.getData()['verticeIndex'], geoPoint);
-          polygon.setGeometry(new H.geo.Polygon(geoLineString));
-      
-          evt.stopPropagation();
-        }, true);
-      }
-      
     componentDidMount() {
         const { data } = this.props;
         let routePoints = data['Route Points'].slice(1);
-        const polygonPoints = data['Polygon Points'].slice(1);
+        let polygonPoints = data['Polygon Points'].slice(1);
         let territory1Points = [];
         let territory2Points = [];
         let routePointsA = [];
@@ -139,10 +35,10 @@ class HereMap extends Component {
                 routePointsB.push(point);
         });
         polygonPoints.map(point => {
-            if(point.A === "TERRITORRY_1"){
+            if (point.A === "TERRITORRY_1") {
                 territory1Points.push(point);
             }
-            else{
+            else {
                 territory2Points.push(point)
             }
         });
@@ -168,12 +64,13 @@ class HereMap extends Component {
         const behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(map));
 
         const ui = H.ui.UI.createDefault(map, defaultLayers);
- 
-        //this.calculateAndDrawRoute(platform, H, map, routePointsA);
-        //this.calculateAndDrawRoute(platform, H, map, routePointsB);
-        this.createResizablePolygon(H,map,this.createLineStringFromPoints(H,territory2Points));
-        console.log(territory1Points);
-        console.log(territory2Points)
+
+        this.setState({
+            paramsA: [platform, H, map, routePointsA, this.createLineStringFromPoints(H, routePointsA)],
+            paramsB: [platform, H, map, routePointsB, this.createLineStringFromPoints(H, routePointsB)],
+            paramsTerritory1: [H, map, this.createLineStringFromPoints(H, territory1Points)],
+            paramsTerritory2: [H, map, this.createLineStringFromPoints(H, territory2Points)]
+        });
 
         map.addEventListener('tap', (e) => {
             if (e.target instanceof H.map.Marker) {
@@ -222,7 +119,15 @@ class HereMap extends Component {
     }
 
     render() {
-        return <div ref={this.mapRef} style={{ height: "80vh", width: "100vw" }} />;
+        return (
+            <div className="container">
+                <div ref={this.mapRef} style={{ height: "80vh", width: "100vw" }} />
+                <DrawRoute routeName="A" params={this.state.paramsA} />
+                <DrawRoute routeName="B" params={this.state.paramsB} />
+                <DrawResizablePolygon territoryName="1" params={this.state.paramsTerritory1} />
+                <DrawResizablePolygon territoryName="2" params={this.state.paramsTerritory1} />
+            </div>
+        );
     }
 }
 

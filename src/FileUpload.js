@@ -30,13 +30,10 @@ class FileUpload extends Component {
             });
         })
     }
-    /**/
     render() {
         const { fileReady, data } = this.state;
         const template = fileReady ? (
             <div className="container">
-                <input type="file" id="fileUpload" name="fileUpload" accept=".xls, .xlsx" onChange={this.handleOnChange} />
-                <button type="button" className="btn btn-success btn-block" onClick={this.handleOnClick}>Upload</button>
                 <HereMap data={data}/>
             </div>
         ) : (
