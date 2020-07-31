@@ -4,8 +4,7 @@ import FileUpload from './FileUpload';
 
 function App() {
   return (
-    <div className="App">
-      <h1>App.js</h1>
+    <div className="App ">
       <FileUpload />
     </div>
   );

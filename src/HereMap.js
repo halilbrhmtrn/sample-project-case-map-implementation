@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import DrawRoute from './DrawRoute';
 import DrawResizablePolygon from './DrawResizablePolygon';
+import config from './config';
 
 class HereMap extends Component {
     mapRef = React.createRef();
@@ -45,7 +46,7 @@ class HereMap extends Component {
 
         const H = window.H;
         const platform = new H.service.Platform({
-            apikey: "_ZCu9hKCQoOJUSgQXCDkJYFlayYDzKBAKICn5yQamO8"
+            apikey: config.HERE_API_KEY
         });
 
         const defaultLayers = platform.createDefaultLayers();
@@ -121,11 +122,31 @@ class HereMap extends Component {
     render() {
         return (
             <div className="container">
-                <div ref={this.mapRef} style={{ height: "80vh", width: "100vw" }} />
-                <DrawRoute routeName="A" params={this.state.paramsA} />
-                <DrawRoute routeName="B" params={this.state.paramsB} />
-                <DrawResizablePolygon territoryName="1" params={this.state.paramsTerritory1} />
-                <DrawResizablePolygon territoryName="2" params={this.state.paramsTerritory1} />
+                <div className="row">
+                    <div className="col s12 m6 l3">
+                        <div ref={this.mapRef} style={{ height: "480px", width: "580px" }} />
+                    </div>
+                </div>
+                <div className="row">
+                    <div className="col s12 m6 l6">
+                        <DrawRoute routeName="A" params={this.state.paramsA} />
+
+                    </div>
+                    <div className="col s12 m6 l6">
+                        <DrawRoute routeName="B" params={this.state.paramsB} />
+
+                    </div>
+
+                    <div className="col s12 m6 l6">
+                        <DrawResizablePolygon territoryName="1" params={this.state.paramsTerritory1} />
+
+                    </div>
+                    <div className="col s12 m6 l6">
+                        <DrawResizablePolygon territoryName="2" params={this.state.paramsTerritory1} />
+
+                    </div>
+                </div>
+
             </div>
         );
     }

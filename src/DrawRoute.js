@@ -41,7 +41,7 @@ class DrawRoute extends Component {
     }
     render() {
         return (
-            <button onClick={() => this.calculateAndDrawRoute(...this.props.params)}>Calculate Route {this.props.routeName}</button>
+            <button className="btn waves-effect waves-light red" onClick={() => this.calculateAndDrawRoute(...this.props.params)}>Calculate Route {this.props.routeName}</button>
         );
     }
 }

@@ -79,7 +79,7 @@ class DrawResizablePolygon extends Component {
     }
     render() {
         return (
-            <button onClick={() => this.createResizablePolygon(...this.props.params)}>Draw Polygon: Territory {this.props.territoryName}</button>
+            <button className=" btn waves-effect waves-light green" onClick={() => this.createResizablePolygon(...this.props.params)}>Draw Polygon: Territory {this.props.territoryName}</button>
         );
     }
 }
