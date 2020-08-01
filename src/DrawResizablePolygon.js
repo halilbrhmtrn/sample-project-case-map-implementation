@@ -38,8 +38,10 @@ class DrawResizablePolygon extends Component {
             vertice.setData({ 'verticeIndex': index })
             verticeGroup.addObject(vertice);
         });
-
         map.addObject(mainGroup);
+        console.log(polygon.bb.ab.K.c);
+        map.setCenter({lat:polygon.bb.ab.K.c.lat, lng:polygon.bb.ab.K.c.lng});
+        map.setZoom(10);
 
         mainGroup.addEventListener('pointerenter', function (evt) {
             if (polygonTimeout) {
