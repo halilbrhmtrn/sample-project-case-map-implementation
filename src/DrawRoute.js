@@ -14,6 +14,9 @@ class DrawRoute extends Component {
         console.log(this.props);
     }
     calculateAndDrawRoute = (platform, H, map, points, lineString) => {
+        if(map.getObjects().length !== 0) {
+            map.removeObjects(map.getObjects());
+        }
         var router = platform.getRoutingService(null, 8),
             routeRequestParams = {
                 routingMode: 'fast',

@@ -4,6 +4,9 @@ import React, { Component } from 'react';
 class DrawResizablePolygon extends Component {
 
     createResizablePolygon = (H, map, lineString) => {
+        if(map.getObjects().length !== 0) {
+            map.removeObjects(map.getObjects());
+        }
         var svgCircle = '<svg width="20" height="20" version="1.1" xmlns="http://www.w3.org/2000/svg">' +
             '<circle cx="10" cy="10" r="7" fill="transparent" stroke="red" stroke-width="4"/>' +
             '</svg>',
