@@ -74,7 +74,8 @@ class HereMap extends Component {
         });
 
         map.addEventListener('tap', (e) => {
-            if (e.target instanceof H.map.Marker) {
+           // console.log(e.target.data.verticeIndex);
+            if (e.target instanceof H.map.Marker && !e.target.data.verticeIndex) {
                 let bubble = new H.ui.InfoBubble(e.target.getGeometry(), {
                     content: e.target.getData()
                 });
@@ -87,7 +88,7 @@ class HereMap extends Component {
         map.addEventListener('dragstart', function (ev) {
             var target = ev.target,
                 pointer = ev.currentPointer;
-            if (target instanceof H.map.Marker) {
+            if (target instanceof H.map.Marker && !ev.target.data.verticeIndex) {
                 var targetPosition = map.geoToScreen(target.getGeometry());
                 var targetLatLng = target.getGeometry();
                 target.setData('marker dragged. Lat: ' + targetLatLng.lat + ' Lng: ' + targetLatLng.lng);
@@ -98,7 +99,7 @@ class HereMap extends Component {
 
         map.addEventListener('dragend', function (ev) {
             var target = ev.target;
-            if (target instanceof H.map.Marker) {
+            if (target instanceof H.map.Marker && !ev.target.data.verticeIndex) {
                 behavior.enable();
             }
         }, false);
@@ -106,7 +107,7 @@ class HereMap extends Component {
         map.addEventListener('drag', function (ev) {
             var target = ev.target,
                 pointer = ev.currentPointer;
-            if (target instanceof H.map.Marker) {
+            if (target instanceof H.map.Marker && !ev.target.data.verticeIndex) {
                 target.setGeometry(map.screenToGeo(pointer.viewportX - target['offset'].x, pointer.viewportY - target['offset'].y));
             }
         }, false);
