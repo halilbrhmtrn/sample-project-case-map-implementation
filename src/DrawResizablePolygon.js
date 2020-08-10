@@ -39,9 +39,8 @@ class DrawResizablePolygon extends Component {
             verticeGroup.addObject(vertice);
         });
         map.addObject(mainGroup);
-        console.log(polygon.bb.ab.K.c);
-        map.setCenter({lat:polygon.bb.ab.K.c.lat, lng:polygon.bb.ab.K.c.lng});
-        map.setZoom(10);
+        //map.setCenter({lat:, lng:});
+        map.setZoom(9);
 
         mainGroup.addEventListener('pointerenter', function (evt) {
             if (polygonTimeout) {
